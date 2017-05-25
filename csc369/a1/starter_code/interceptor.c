@@ -251,8 +251,9 @@ void (*orig_exit_group)(int);
  */
 void my_exit_group(int status)
 {
-
-
+	orig_exit_group = exit_group;  // we storin'
+	del_pid(current->pid);
+	exit_group(status);
 
 }
 //----------------------------------------------------------------
@@ -277,7 +278,11 @@ void my_exit_group(int status)
  */
 asmlinkage long interceptor(struct pt_regs reg) {
 
+	if (check_pid_monitored(sys,pid)){
+		//then monitored
+	}else{
 
+	}
 
 
 
@@ -366,6 +371,31 @@ long (*orig_custom_syscall)(void);
  */
 static int init_function(void) {
 
+	while (spinlock_t calltable_lock == SPIN_LOCK_LOCKED); //wait if locked;
+
+	spinlock_t calltable_lock = SPIN_LOCK_UNLOCKED;
+
+	orig_custom_syscall = sys_call_table[0];
+	orig_exit_group = sys_call_table[__NR_exit_group];
+	set_addr_rw(MY_CUSTOM_SYSCALL);
+	set_addr_rw(__NR_exit_group);
+	sys_call_table[__NR_exit_group] = my_exit_group;
+	sys_call_table[0] = my_syscall;
+	set_addr_ro(MY_CUSTOM_SYSCALL);
+	set_addr_ro(__NR_exit_group);
+
+
+	int i;
+	i = 0;
+	// for every systemcall initialize myTable and original system call
+	for (i; i <= NR_syscalls; i++){ 
+		struct list_head my_own_list = table[i].my_list;
+		INIT_LIST_HEAD(&my_own_list);
+
+		table[i].f = sys_call_table[i]; //copys the original system call into our own table.
+	}	
+
+	spinlock_t calltable_lock = SPIN_LOCK_UNLOCKED; //unlock spinlock
 
 
 
@@ -387,9 +417,8 @@ static int init_function(void) {
  */
 static void exit_function(void)
 {        
-
-
-
+	MY_CUSTOM_SYSCALL = orig_custom_syscall;
+	__NR_exit_group = orig_exit_group;
 
 
 
