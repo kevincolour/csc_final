@@ -371,9 +371,9 @@ long (*orig_custom_syscall)(void);
  */
 static int init_function(void) {
 
-	while (spinlock_t calltable_lock == SPIN_LOCK_LOCKED); //wait if locked;
+	while (calltable_lock == SPIN_LOCK_LOCKED); //wait if locked;
 
-	spinlock_t calltable_lock = SPIN_LOCK_UNLOCKED;
+	calltable_lock = SPIN_LOCK_UNLOCKED;
 
 	orig_custom_syscall = sys_call_table[0];
 	orig_exit_group = sys_call_table[__NR_exit_group];
@@ -395,7 +395,7 @@ static int init_function(void) {
 		table[i].f = sys_call_table[i]; //copys the original system call into our own table.
 	}	
 
-	spinlock_t calltable_lock = SPIN_LOCK_UNLOCKED; //unlock spinlock
+	calltable_lock = SPIN_LOCK_UNLOCKED; //unlock spinlock
 	return 0;
 }
 
