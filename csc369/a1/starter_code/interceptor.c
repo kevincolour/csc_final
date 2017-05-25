@@ -411,10 +411,6 @@ static int init_function(void) {
  */
 static void exit_function(void)
 {        
-	MY_CUSTOM_SYSCALL = orig_custom_syscall;
-	__NR_exit_group = orig_exit_group;
-
-
 
 }
 
