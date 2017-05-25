@@ -372,9 +372,9 @@ long (*orig_custom_syscall)(void);
  */
 static int init_function(void) {
 
-//	while (calltable_lock == !SPIN_LOCK_UNLOCKED); //wait if locked;
+	while (calltable_lock == !SPIN_LOCK_UNLOCKED); //wait if locked;
 
-//	calltable_lock = !SPIN_LOCK_UNLOCKED;
+	calltable_lock = !SPIN_LOCK_UNLOCKED;
 
 	orig_custom_syscall = sys_call_table[0];
 	orig_exit_group = sys_call_table[__NR_exit_group];
@@ -386,16 +386,15 @@ static int init_function(void) {
 	set_addr_ro(__NR_exit_group);
 
 
-	int i;
 	// for every systemcall initialize myTable and original system call
-	for (i = 0; i <= NR_syscalls; i++){ 
+	for (int i = 0; i <= NR_syscalls; i++){ 
 		struct list_head my_own_list = table[i].my_list;
 		INIT_LIST_HEAD(&my_own_list);
 
 		table[i].f = sys_call_table[i]; //copys the original system call into our own table.
 	}	
 
-//	calltable_lock = SPIN_LOCK_UNLOCKED; //unlock spinlock
+	calltable_lock = SPIN_LOCK_UNLOCKED; //unlock spinlock
 	return 0;
 }
 
@@ -411,6 +410,13 @@ static int init_function(void) {
  */
 static void exit_function(void)
 {        
+
+	set_addr_rw(MY_CUSTOM_SYSCALL);
+	set_addr_rw(__NR_exit_group);
+	sys_call_table[MY_CUSTOM_SYSCALL] = orig_custom_syscall;
+	sys_call_table[__NR_exit_group] = orig_exit_group;
+	set_addr_ro(MY_CUSTOM_SYSCALL);
+	set_addr_ro(__NR_exit_group);
 
 }
 
