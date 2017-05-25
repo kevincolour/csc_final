@@ -277,13 +277,13 @@ void my_exit_group(int status)
  * - Don't forget to call the original system call, so we allow processes to proceed as normal.
  */
 asmlinkage long interceptor(struct pt_regs reg) {
-
+/*
 	if (check_pid_monitored(sys,pid)){
 		//then monitored
 	}else{
 
 	}
-
+*/
 
 
 	return 0; // Just a placeholder, so it compiles with no warnings!
@@ -396,12 +396,6 @@ static int init_function(void) {
 	}	
 
 	spinlock_t calltable_lock = SPIN_LOCK_UNLOCKED; //unlock spinlock
-
-
-
-
-
-
 	return 0;
 }
 
