@@ -366,13 +366,13 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		(cmd == REQUEST_STOP_MONITORING && table[syscall].intercepted == 0)||
 		(cmd == REQUEST_STOP_MONITORING && table[syscall].monitored == 0)	
 		){
-		return -EINVAL
+		return -EINVAL;
 	}
 	if (cmd == REQUEST_SYSCALL_INTERCEPT && table[syscall].intercepted == 1){
-		return -EBUSY
+		return -EBUSY;
 	}
 	if (cmd == REQUEST_START_MONITORING && check_pid_monitored(syscall, pid) == 1){
-		return -EBUSY
+		return -EBUSY;
 	}
 
 
@@ -408,10 +408,10 @@ static int init_function(void) {
 
 	orig_custom_syscall = sys_call_table[0];
 	orig_exit_group = sys_call_table[__NR_exit_group];
-	set_addr_rw((unsigned long)sys_call_table)
+	set_addr_rw((unsigned long)sys_call_table);
 	sys_call_table[__NR_exit_group] = my_exit_group;
 	sys_call_table[0] = my_syscall;
-	set_addr_ro((unsigned long)sys_call_table)
+	set_addr_ro((unsigned long)sys_call_table);
 
 
 	int i;
@@ -440,10 +440,10 @@ static int init_function(void) {
 static void exit_function(void)
 {        
 
-	set_addr_rw((unsigned long)sys_call_table)
+	set_addr_rw((unsigned long)sys_call_table);
 	sys_call_table[MY_CUSTOM_SYSCALL] = orig_custom_syscall;
 	sys_call_table[__NR_exit_group] = orig_exit_group;
-	set_addr_ro((unsigned long)sys_call_table)
+	set_addr_ro((unsigned long)sys_call_table);
 
 }
 
