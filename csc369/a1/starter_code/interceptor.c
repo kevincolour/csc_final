@@ -251,11 +251,9 @@ void (*orig_exit_group)(int);
  */
 void my_exit_group(int status)
 {
-	/*
-	orig_exit_group = exit_group;  // we storin'
+
 	del_pid(current->pid);
-	exit_group(status);
-	*/
+	orig_exit_group(status);
 }
 //----------------------------------------------------------------
 
@@ -341,9 +339,41 @@ asmlinkage long interceptor(struct pt_regs reg) {
  */
 asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 
-
-
-
+	int req_proc = current_uid();
+	if (syscall < 0 || syscall > NR_syscalls || syscall == MY_CUSTOM_SYSCALL){
+		return -EINVAL;
+	}
+	if (cmd == REQUEST_START_MONITORING || cmd == REQUEST_STOP_MONITORING){
+		if (pid < 0 || (pid_task(find_vpid(pid), PIDTYPE_PID) == null)){
+			if (pid != 0){
+				return -EINVAL;
+			}
+		}
+	}
+	if (cmd == REQUEST_SYSCALL_INTERCEPT ||cmd == REQUEST_SYSCALL_RELEASE){
+		if (req_proc){
+			return -EPERM;
+		}
+	}
+	else{ // Monitoring commands
+		if (req_proc != 0 ){
+			if (check_pid_from_list(pid, req_proc) != 0 || pid == 0){
+				return -EPERM;
+			}
+		}
+	}
+	if ((cmd == REQUEST_SYSCALL_RELEASE && table[syscall].intercepted == 0 )||
+		(cmd == REQUEST_STOP_MONITORING && table[syscall].intercepted == 0)||
+		(cmd == REQUEST_STOP_MONITORING && table[syscall].monitored == 0)	
+		){
+		return -EINVAL
+	}
+	if (cmd == REQUEST_SYSCALL_INTERCEPT && table[syscall].intercepted == 1){
+		return -EBUSY
+	}
+	if (cmd == REQUEST_START_MONITORING && check_pid_monitored(syscall, pid) == 1){
+		return -EBUSY
+	}
 
 
 	return 0;
@@ -378,18 +408,12 @@ static int init_function(void) {
 
 	orig_custom_syscall = sys_call_table[0];
 	orig_exit_group = sys_call_table[__NR_exit_group];
-	set_addr_rw(MY_CUSTOM_SYSCALL);
-	set_addr_rw(__NR_exit_group);
+	set_addr_rw((unsigned long)sys_call_table)
 	sys_call_table[__NR_exit_group] = my_exit_group;
 	sys_call_table[0] = my_syscall;
-	set_addr_ro(MY_CUSTOM_SYSCALL);
-	set_addr_ro(__NR_exit_group);
+	set_addr_ro((unsigned long)sys_call_table)
 
 
-	// for (int i = 0; i < count; ++i)
-	{
-		/* code */
-	} 
 	int i;
 	//every systemcall initialize myTable and original system call
 	for (i = 0; i <= NR_syscalls; i++){ 
@@ -416,12 +440,10 @@ static int init_function(void) {
 static void exit_function(void)
 {        
 
-	set_addr_rw(MY_CUSTOM_SYSCALL);
-	set_addr_rw(__NR_exit_group);
+	set_addr_rw((unsigned long)sys_call_table)
 	sys_call_table[MY_CUSTOM_SYSCALL] = orig_custom_syscall;
 	sys_call_table[__NR_exit_group] = orig_exit_group;
-	set_addr_ro(MY_CUSTOM_SYSCALL);
-	set_addr_ro(__NR_exit_group);
+	set_addr_ro((unsigned long)sys_call_table)
 
 }
 
