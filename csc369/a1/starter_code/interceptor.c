@@ -279,7 +279,7 @@ asmlinkage long interceptor(struct pt_regs reg) {
 	unsigned long syscall = reg.ax;
 
 	if (check_pid_monitored(syscall,current->pid)){
-		log_message(current->pid, syscall, reg.bx, reg.cx, reg.dx, reg.si, reg.di);
+		log_message(current->pid, syscall, reg.bx, reg.cx, reg.dx, reg.si, reg.di, reg.bp);
 	}
 	return table[syscall].f(reg); // call orig
 	
