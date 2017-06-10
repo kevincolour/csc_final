@@ -422,7 +422,7 @@ long (*orig_custom_syscall)(void);
 static int init_function(void) {
 
 
-
+/*
 	spin_lock(&calltable_lock);
 
 	orig_custom_syscall = sys_call_table[0];
@@ -444,7 +444,7 @@ static int init_function(void) {
 	spin_unlock(&calltable_lock);
 	//calltable_lock = SPIN_LOCK_UNLOCKED; //unlock spinlock
 	return 0;
-}
+}*/
 
 /**
  * Module exits. 
