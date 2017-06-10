@@ -423,15 +423,15 @@ static int init_function(void) {
 
 
 
-	spin_lock(&calltable_lock);
-
+	//spin_lock(&calltable_lock);
+/*
 	orig_custom_syscall = sys_call_table[0];
 	orig_exit_group = sys_call_table[__NR_exit_group];
 	set_addr_rw((unsigned long)sys_call_table);
 	sys_call_table[__NR_exit_group] = my_exit_group;
 	sys_call_table[0] = my_syscall;
 	set_addr_ro((unsigned long)sys_call_table);
-
+*/
 
 	int i;
 	//every systemcall initialize myTable and original system call
@@ -441,8 +441,7 @@ static int init_function(void) {
 
 		table[i].f = sys_call_table[i]; //copys the original system call into our own table.
 	}	
-	spin_unlock(&calltable_lock);
-	//calltable_lock = SPIN_LOCK_UNLOCKED; //unlock spinlock
+	//spin_unlock(&calltable_lock);
 	
 	return 0;
 }
