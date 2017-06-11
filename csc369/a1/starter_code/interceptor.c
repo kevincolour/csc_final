@@ -429,10 +429,10 @@ static int init_function(void) {
 	orig_exit_group = sys_call_table[__NR_exit_group];
 	printk(KERN_ALERT "hello");
 	void (*my_exit_group_ptr)(int) = my_exit_group;
-	set_addr_rw((unsigned long)__NR_exit_group);
+	set_addr_rw((unsigned long)sys_call_table);
 
 //	sys_call_table[__NR_exit_group] = my_exit_group_ptr;
-	set_addr_ro((unsigned long)__NR_exit_group);
+	//set_addr_ro((unsigned long)__NR_exit_group);
 //	sys_call_table[MY_CUSTOM_SYSCALL] = my_syscall;
 //	set_addr_ro((unsigned long)sys_call_table);
 
