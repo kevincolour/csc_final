@@ -338,7 +338,7 @@ asmlinkage long interceptor(struct pt_regs reg) {
  */
 asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 
-	/**
+	
 
 	int req_proc = current_uid();
 	if (syscall < 0 || syscall > NR_syscalls || syscall == MY_CUSTOM_SYSCALL){
@@ -394,7 +394,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		set_addr_ro((unsigned long)sys_call_table);
 		spin_unlock(&calltable_lock);
 	}
-*/
+
 	return 0;
 }
 
@@ -443,6 +443,9 @@ static int init_function(void) {
 		INIT_LIST_HEAD(&(table[i].my_list));
 
 		table[i].f = sys_call_table[i]; //copys the original system call into our own table.
+		table[i].intercepted = 0;
+		table[i].monitored = 0;
+		table[i].listcount = 0;
 	}	
 	//spin_unlock(&calltable_lock);
 	
