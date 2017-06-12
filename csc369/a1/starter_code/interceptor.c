@@ -336,7 +336,7 @@ asmlinkage long interceptor(struct pt_regs reg) {
  */
 asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 
-	
+	spin_lock(&calltable_lock);
 	int req_proc = current_uid();
 	if (syscall < 0 || syscall > NR_syscalls || syscall == MY_CUSTOM_SYSCALL){
 		return -EINVAL;
@@ -362,7 +362,8 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	}
 	if ((cmd == REQUEST_SYSCALL_RELEASE && table[syscall].intercepted == 0 )||
 		(cmd == REQUEST_STOP_MONITORING && table[syscall].intercepted == 0)||
-		(cmd == REQUEST_STOP_MONITORING && table[syscall].monitored == 0)	
+		(cmd == REQUEST_STOP_MONITORING && table[syscall].monitored == 0) ||
+		(cmd == REQUEST_START_MONITORING && table[syscall].intercepted == 0)	
 		){
 		return -EINVAL;
 	}
@@ -393,7 +394,29 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		set_addr_ro((unsigned long)sys_call_table);
 		spin_unlock(&calltable_lock);
 	}
-	
+
+	else if (cmd == REQUEST_START_MONITORING){
+		// (don't have to check if root because permission because already checked earlier.)
+		if (pid == 0){
+			table[syscall].monitored == 2;
+		}		
+		if (check_pid_monitored(syscall, pid) == 0){
+			add_pid_sysc(pid, syscall);
+		}
+
+
+
+	}
+
+	else //cmd == REQUEST_STOP_MONITORING
+	{
+		if (check_pid_monitored(syscall, pid) == 0){
+			del_pid_sysc(pid, syscall);
+		}
+		
+	}
+
+	spin_unlock(&calltable_lock);
 	return 0;
 }
 
