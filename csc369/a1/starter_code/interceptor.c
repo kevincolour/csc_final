@@ -336,7 +336,7 @@ asmlinkage long interceptor(struct pt_regs reg) {
  */
 asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 
-	/*
+	
 	int req_proc = current_uid();
 	if (syscall < 0 || syscall > NR_syscalls || syscall == MY_CUSTOM_SYSCALL){
 		return -EINVAL;
@@ -372,7 +372,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	if (cmd == REQUEST_START_MONITORING && check_pid_monitored(syscall, pid) == 1){
 		return -EBUSY;
 	}
-	*/
+
 	//starting implementation
 
 	if (cmd == REQUEST_SYSCALL_INTERCEPT){
@@ -388,7 +388,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	else if (cmd == REQUEST_SYSCALL_RELEASE){
 		spin_lock(&calltable_lock);
 		set_addr_rw((unsigned long)sys_call_table);
-		table[syscall].intercepted = 1;
+		table[syscall].intercepted = 0;
 		sys_call_table[syscall] = table[syscall].f;
 		set_addr_ro((unsigned long)sys_call_table);
 		spin_unlock(&calltable_lock);
