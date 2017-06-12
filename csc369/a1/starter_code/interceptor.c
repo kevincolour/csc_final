@@ -417,7 +417,6 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 
 	else //cmd == REQUEST_STOP_MONITORING
 	{
-		int i;
 		// remove all of the monitored pid's.
 		if (pid == 0){
 			destroy_list(syscall);
@@ -474,8 +473,10 @@ static int init_function(void) {
 
 		table[i].f = sys_call_table[i]; //copys the original system call into our own table.
 		table[i].intercepted = 0;
-		table[i].monitored = 0;
+		table[i].monitored = 0; 
 		table[i].listcount = 0;
+
+
 	}	
 	spin_unlock(&calltable_lock);
 	
@@ -499,6 +500,10 @@ static void exit_function(void)
 	set_addr_rw((unsigned long)sys_call_table);
 	sys_call_table[MY_CUSTOM_SYSCALL] = orig_custom_syscall;
 	sys_call_table[__NR_exit_group] = orig_exit_group;
+	// destroy all lists of monitored pids.
+	for (i = 0; i < NR_syscalls; i++){ 
+		destroy_list(i);
+	}	
 	set_addr_ro((unsigned long)sys_call_table);
 	spin_unlock(&calltable_lock);
 
