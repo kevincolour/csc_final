@@ -193,13 +193,13 @@ int main(int argc, char **argv) {
 
 	if (argc>1 && strcmp(argv[1], "release") == 0)
 		return do_release(atoi(argv[2]), atoi(argv[3]));
-
+/*
 	if (argc>1 && strcmp(argv[1], "start") == 0)
 		return do_start(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
 
 	if (argc>1 && strcmp(argv[1], "stop") == 0)
 		return do_stop(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
-/*
+
 	if (argc>1 && strcmp(argv[1], "monitor") == 0)
 		return do_monitor(atoi(argv[2]));
 
