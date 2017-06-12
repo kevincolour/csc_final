@@ -372,7 +372,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	if (cmd == REQUEST_START_MONITORING && check_pid_monitored(syscall, pid) == 1){
 		return -EBUSY;
 	}
-
+	*/
 	//starting implementation
 
 	if (cmd == REQUEST_SYSCALL_INTERCEPT){
