@@ -396,17 +396,17 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		set_addr_ro((unsigned long)sys_call_table);
 		spin_unlock(&calltable_lock);
 	}
-
+/*
 	else if (cmd == REQUEST_START_MONITORING){
 		// (don't have to check if root because permission because already checked earlier.)
 
-		/*if (pid == 0){
+		if (pid == 0){
 			table[syscall].monitored = 2;
 		}		
 		if (check_pid_monitored(syscall, pid) == 0){
 			table[syscall].monitored = 1;
 			add_pid_sysc(pid, syscall);
-		}*/
+		}
 
 
 
@@ -414,20 +414,20 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 
 	else //cmd == REQUEST_STOP_MONITORING
 	{
-		/*int i;
+		int i;
 		// remove all of the monitored pid's.
 		if (pid ==0){
 			for (i = 0; i < NR_syscalls; i++){
 				destroy_list(i);
 			} 
-		}*/
+		}
 		if (check_pid_monitored(syscall, pid) == 0){
 			del_pid_sysc(pid,syscall);
 		}
 		
 	}
 
-	
+*/	
 	return 0;
 }
 
