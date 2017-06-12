@@ -398,10 +398,10 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	else if (cmd == REQUEST_START_MONITORING){
 		// (don't have to check if root because permission because already checked earlier.)
 		if (pid == 0){
-			table[syscall].monitored == 2;
+			table[syscall].monitored = 2;
 		}		
 		if (check_pid_monitored(syscall, pid) == 0){
-			table[syscall].monitored == 1;
+			table[syscall].monitored = 1;
 			add_pid_sysc(pid, syscall);
 		}
 
@@ -455,8 +455,7 @@ static int init_function(void) {
 
 	orig_custom_syscall = sys_call_table[MY_CUSTOM_SYSCALL];
 	orig_exit_group = sys_call_table[__NR_exit_group];
-	printk(KERN_ALERT "hello /n");
-	void (*my_exit_ptr)(int) = my_exit_group;
+
 	set_addr_rw((unsigned long)sys_call_table);
 	sys_call_table[__NR_exit_group] = &my_exit_group;
 	sys_call_table[MY_CUSTOM_SYSCALL] = &my_syscall;
@@ -467,7 +466,6 @@ static int init_function(void) {
 	int i;
 	//every systemcall initialize myTable and original system call
 	for (i = 0; i < NR_syscalls; i++){ 
-		struct list_head my_own_list = table[i].my_list;
 		INIT_LIST_HEAD(&(table[i].my_list));
 
 		table[i].f = sys_call_table[i]; //copys the original system call into our own table.
