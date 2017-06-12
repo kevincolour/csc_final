@@ -276,14 +276,14 @@ void my_exit_group(int status)
  * - Don't forget to call the original system call, so we allow processes to proceed as normal.
  */
 asmlinkage long interceptor(struct pt_regs reg) {
-	/**
+	
 	unsigned long syscall = reg.ax;
 
 	if (check_pid_monitored(syscall,current->pid)){
 		log_message(current->pid, syscall, reg.bx, reg.cx, reg.dx, reg.si, reg.di, reg.bp);
 	}
 	return table[syscall].f(reg); // call orig
-	*/
+	
 	return 0;
 }
 
