@@ -336,7 +336,7 @@ asmlinkage long interceptor(struct pt_regs reg) {
  */
 asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 
-	/*
+
 	int req_proc = current_uid();
 	if (syscall < 0 || syscall > NR_syscalls || syscall == MY_CUSTOM_SYSCALL){
 		return -EINVAL;
@@ -398,7 +398,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 }
 
 
- */
+
 long (*orig_custom_syscall)(void);
 
 
@@ -432,7 +432,7 @@ static int init_function(void) {
 	sys_call_table[MY_CUSTOM_SYSCALL] = &my_syscall;
 	set_addr_ro((unsigned long)sys_call_table);
 
-	
+
 
 	int i;
 	//every systemcall initialize myTable and original system call
