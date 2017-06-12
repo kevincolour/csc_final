@@ -396,7 +396,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		set_addr_ro((unsigned long)sys_call_table);
 		spin_unlock(&calltable_lock);
 	}
-
+/*
 	else if (cmd == REQUEST_START_MONITORING){
 		// (don't have to check if root because permission because already checked earlier.)
 
@@ -427,7 +427,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		
 	}
 
-	
+*/	
 	return 0;
 }
 
@@ -500,11 +500,6 @@ static void exit_function(void)
 	set_addr_rw((unsigned long)sys_call_table);
 	sys_call_table[MY_CUSTOM_SYSCALL] = orig_custom_syscall;
 	sys_call_table[__NR_exit_group] = orig_exit_group;
-	// destroy all lists of monitored pids.
-	int i;
-	for (i = 0; i < NR_syscalls; i++){ 
-		destroy_list(i);
-	}	
 	set_addr_ro((unsigned long)sys_call_table);
 	spin_unlock(&calltable_lock);
 
