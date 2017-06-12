@@ -429,17 +429,17 @@ static int init_function(void) {
 	orig_exit_group = sys_call_table[__NR_exit_group];
 	printk(KERN_ALERT "hello");
 	set_addr_rw((unsigned long)sys_call_table);
-	sys_call_table[__NR_exit_group] = &my_exit_group;
+	sys_call_table[__NR_exit_group] = & my_exit_group;
+	sys_call_table[MY_CUSTOM_SYSCALL] = my_syscall;
 	set_addr_ro((unsigned long)sys_call_table);
-//	sys_call_table[MY_CUSTOM_SYSCALL] = my_syscall;
-//	set_addr_ro((unsigned long)sys_call_table);
+
 
 
 	int i;
 	//every systemcall initialize myTable and original system call
-	for (i = 0; i <= NR_syscalls; i++){ 
+	for (i = 0; i < NR_syscalls; i++){ 
 		struct list_head my_own_list = table[i].my_list;
-		INIT_LIST_HEAD(&my_own_list);
+		INIT_LIST_HEAD(&(table[i].my_list));
 
 		table[i].f = sys_call_table[i]; //copys the original system call into our own table.
 	}	
