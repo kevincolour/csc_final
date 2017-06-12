@@ -282,7 +282,9 @@ asmlinkage long interceptor(struct pt_regs reg) {
 	if (check_pid_monitored(syscall,current->pid)){
 		log_message(current->pid, syscall, reg.bx, reg.cx, reg.dx, reg.si, reg.di, reg.bp);
 	}
+	
 	return table[syscall].f(reg); // call orig
+
 }
 
 /**
@@ -498,11 +500,7 @@ static void exit_function(void)
 	set_addr_ro((unsigned long)sys_call_table);
 	spin_unlock(&calltable_lock);
 
-	int i;
-	// destroy every syscall's list of moniterd pid's.
-	for (i = 0; i < NR_syscalls; i++){
-		destroy_list(i);
-	}
+
 
 }
 
