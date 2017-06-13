@@ -346,11 +346,10 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		return -EINVAL;
 	}
 	if (cmd == REQUEST_START_MONITORING || cmd == REQUEST_STOP_MONITORING){
-		if (pid < 0 || (pid_task(find_vpid(pid), PIDTYPE_PID) == NULL)){
-			if (pid != 0){
+		if (pid < 0 || ((pid_task(find_vpid(pid), PIDTYPE_PID) == NULL) && pid != 0))
+			{
 				return -EINVAL;
 			}
-		}
 	}
 	if (cmd == REQUEST_SYSCALL_INTERCEPT ||cmd == REQUEST_SYSCALL_RELEASE){
 		if (req_proc != 0){
@@ -374,14 +373,14 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	if (cmd == REQUEST_SYSCALL_INTERCEPT && table[syscall].intercepted == 1){
 		return -EBUSY;
 	}
-	spin_lock(&pidlist_lock);
+	
 	if (cmd == REQUEST_START_MONITORING && check_pid_monitored(syscall, pid) == 1){
 		return -EBUSY;
 	}
 	if (cmd == REQUEST_START_MONITORING && table[syscall].monitored == 2){
 		return -EBUSY;
 	}
-	spin_unlock(&pidlist_lock);
+	;
 
 	//starting implementation
 
