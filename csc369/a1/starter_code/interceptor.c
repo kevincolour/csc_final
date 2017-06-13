@@ -351,7 +351,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		}
 	}
 	if (cmd == REQUEST_SYSCALL_INTERCEPT ||cmd == REQUEST_SYSCALL_RELEASE){
-		if (req_proc){
+		if (req_proc != 0){
 			return -EPERM;
 		}
 	}
