@@ -418,7 +418,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	{
 		// remove all of the monitored pid's.
 		if (pid == 0){
-			table[syscall] = 0;
+			table[syscall].monitored = 0;
 		}
 		if (check_pid_monitored(syscall, pid) == 1){
 			del_pid_sysc(pid,syscall);
