@@ -253,7 +253,7 @@ void my_exit_group(int status)
 {
 	spin_lock(&pidlist_lock);
 	del_pid(current->pid);
-	spin_unlcok(&pidlist_lock);
+	spin_unlock(&pidlist_lock);
 	orig_exit_group(status);
 }
 //----------------------------------------------------------------
