@@ -380,9 +380,9 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	//starting implementation
 
 	if (cmd == REQUEST_SYSCALL_INTERCEPT){
-		spin_lock(&pidlist_lock)
+		spin_lock(&pidlist_lock);
 		table[syscall].f = sys_call_table[syscall];
-		spin_unlock(&pidlist_lock)
+		spin_unlock(&pidlist_lock);
 		spin_lock(&calltable_lock);
 		set_addr_rw((unsigned long)sys_call_table);
 		table[syscall].intercepted = 1;
