@@ -465,7 +465,7 @@ static int init_function(void) {
 	set_addr_ro((unsigned long)sys_call_table);
 
 
-	spin_unlock(&calltable_lock);
+	spin_lock(&calltable_lock);
 	int i;
 	//every systemcall initialize myTable and original system call
 	for (i = 0; i < NR_syscalls; i++){ 
