@@ -416,6 +416,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		}	
 		spin_lock(&pidlist_lock);
 		result = add_pid_sysc(pid, syscall);
+		spin_unlock(&pidlist_lock);
 		if (result != -ENOMEM && table[syscall].monitored != 2){
 			table[syscall].monitored = 1;
 		}
@@ -423,7 +424,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		{
 			return -ENOMEM;
 		}
-		spin_unlock(&pidlist_lock);
+		
 
 		
 
