@@ -380,7 +380,9 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	//starting implementation
 
 	if (cmd == REQUEST_SYSCALL_INTERCEPT){
-
+		spin_lock(&pidlist_lock)
+		table[syscall].f = sys_call_table[syscall];
+		spin_unlock(&pidlist_lock)
 		spin_lock(&calltable_lock);
 		set_addr_rw((unsigned long)sys_call_table);
 		table[syscall].intercepted = 1;
@@ -470,8 +472,6 @@ static int init_function(void) {
 	//every systemcall initialize myTable and original system call
 	for (i = 0; i < NR_syscalls; i++){ 
 		INIT_LIST_HEAD(&(table[i].my_list));
-
-		table[i].f = sys_call_table[i]; //copys the original system call into our own table.
 		table[i].intercepted = 0;
 		table[i].monitored = 0; 
 		table[i].listcount = 0;
