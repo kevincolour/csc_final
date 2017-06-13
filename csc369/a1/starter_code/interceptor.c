@@ -464,8 +464,7 @@ static int init_function(void) {
 	sys_call_table[MY_CUSTOM_SYSCALL] = &my_syscall;
 	set_addr_ro((unsigned long)sys_call_table);
 
-
-	spin_lock(&calltable_lock);
+	spin_unlock(&calltable_lock);
 	int i;
 	//every systemcall initialize myTable and original system call
 	for (i = 0; i < NR_syscalls; i++){ 
@@ -476,7 +475,7 @@ static int init_function(void) {
 		table[i].monitored = 0; 
 		table[i].listcount = 0;
 	}	
-	spin_unlock(&calltable_lock);
+	
 	
 	return 0;
 }
