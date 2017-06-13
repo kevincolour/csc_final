@@ -403,12 +403,12 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 
 	else if (cmd == REQUEST_START_MONITORING){
 		// (don't have to check if root for permission checks because already checked earlier.)
-
+		int result;
 		if (pid == 0){
 			table[syscall].monitored = 2;
 		}	
 		spin_lock(&pidlist_lock);
-		int result = add_pid_sysc(pid, syscall);
+		result = add_pid_sysc(pid, syscall);
 		if (result != -ENOMEM && table[syscall].monitored != 2){
 			table[syscall].monitored = 1;
 		}
@@ -460,7 +460,7 @@ long (*orig_custom_syscall)(void);
 static int init_function(void) {
 
 
-
+	int i;
 	spin_lock(&calltable_lock);
 
 	orig_custom_syscall = sys_call_table[MY_CUSTOM_SYSCALL];
@@ -473,7 +473,7 @@ static int init_function(void) {
 
 
 	spin_lock(&calltable_lock);
-	int i;
+	
 	//every systemcall initialize myTable and original system call
 	for (i = 0; i < NR_syscalls; i++){ 
 		spin_lock(&pidlist_lock);
