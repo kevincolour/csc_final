@@ -361,10 +361,6 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 			if (check_pid_from_list(current->pid, pid) != 0){			
 				return -EPERM;
 			}
-			// deny access to all pid's if non-root
-			if (pid == 0){
-				return -EPERM;
-			}
 		}
 	}
 	if ((cmd == REQUEST_SYSCALL_RELEASE && table[syscall].intercepted == 0 )||
@@ -416,15 +412,10 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		}	
 		spin_lock(&pidlist_lock);
 		result = add_pid_sysc(pid, syscall);
-		spin_unlock(&pidlist_lock);
 		if (result != -ENOMEM && table[syscall].monitored != 2){
 			table[syscall].monitored = 1;
 		}
-		else
-		{
-			return -ENOMEM;
-		}
-		
+		spin_unlock(&pidlist_lock);
 
 		
 
