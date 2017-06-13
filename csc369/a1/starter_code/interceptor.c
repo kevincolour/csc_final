@@ -359,7 +359,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	}
 	else{ // Monitoring commands
 		if (req_proc != 0 ){	
-			if (check_pid_from_list(current->pid, pid) != 0 || pid == 0){			
+			if (check_pid_from_list(current->pid, pid) != 0){			
 				return -EPERM;
 			}
 		}
