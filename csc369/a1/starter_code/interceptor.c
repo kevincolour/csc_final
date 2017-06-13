@@ -374,9 +374,11 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	if (cmd == REQUEST_SYSCALL_INTERCEPT && table[syscall].intercepted == 1){
 		return -EBUSY;
 	}
+	spin_lock(&pidlist_lock);
 	if (cmd == REQUEST_START_MONITORING && check_pid_monitored(syscall, pid) == 1){
 		return -EBUSY;
 	}
+	spin_unlock(&pidlist_lock);
 
 	//starting implementation
 
@@ -420,7 +422,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 
 	else //cmd == REQUEST_STOP_MONITORING
 	{
-		spin_lock(&pidlist_lock);
+		spin_unlock(&pidlist_lock);
 		// remove all of the monitored pid's.
 		if (pid == 0){
 			table[syscall].monitored = 0;
@@ -429,7 +431,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 			del_pid_sysc(pid,syscall);
 		}
 		
-		spin_unlock(&pidlist_lock);
+		spin_lock(&pidlist_lock);
 	}
 
 
@@ -470,7 +472,7 @@ static int init_function(void) {
 	set_addr_ro((unsigned long)sys_call_table);
 
 
-	spin_lock(&calltable_lock);
+	spin_unlock(&calltable_lock);
 	
 	//every systemcall initialize myTable and original system call
 	for (i = 0; i < NR_syscalls; i++){ 
