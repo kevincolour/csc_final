@@ -358,10 +358,8 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 		}
 	}
 	else{ // Monitoring commands
-		if (req_proc != 0 ){
-			spin_lock(&pidlist_lock);
-			if (check_pid_from_list(current->pid, pid) != 0 || pid == 0){
-			spin_unlock(&pidlist_lock);
+		if (req_proc != 0 ){	
+			if (check_pid_from_list(current->pid, pid) != 0 || pid == 0){			
 				return -EPERM;
 			}
 		}
@@ -404,7 +402,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	}
 
 	else if (cmd == REQUEST_START_MONITORING){
-		// (don't have to check if root because permission because already checked earlier.)
+		// (don't have to check if root for permission checks because already checked earlier.)
 
 		if (pid == 0){
 			table[syscall].monitored = 2;
