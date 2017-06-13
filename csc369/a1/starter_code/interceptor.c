@@ -251,8 +251,9 @@ void (*orig_exit_group)(int);
  */
 void my_exit_group(int status)
 {
-
+	spinlock(&pidlist_lock);
 	del_pid(current->pid);
+	spinunlcok(&pidlist_lock);
 	orig_exit_group(status);
 }
 //----------------------------------------------------------------
@@ -357,7 +358,7 @@ asmlinkage long my_syscall(int cmd, int syscall, int pid) {
 	}
 	else{ // Monitoring commands
 		if (req_proc != 0 ){
-			if (check_pid_from_list(pid, req_proc) != 0 || pid == 0){
+			if (check_pid_from_list(current->pid, pid) != 0 || pid == 0){
 				return -EPERM;
 			}
 		}
@@ -464,7 +465,7 @@ static int init_function(void) {
 	set_addr_ro((unsigned long)sys_call_table);
 
 
-
+	spin_unlock(&calltable_lock)
 	int i;
 	//every systemcall initialize myTable and original system call
 	for (i = 0; i < NR_syscalls; i++){ 
@@ -477,7 +478,7 @@ static int init_function(void) {
 
 
 	}	
-	spin_unlock(&calltable_lock);
+
 	
 	return 0;
 }
