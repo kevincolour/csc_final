@@ -251,9 +251,9 @@ void (*orig_exit_group)(int);
  */
 void my_exit_group(int status)
 {
-	spinlock(&pidlist_lock);
+	spin_lock(&pidlist_lock);
 	del_pid(current->pid);
-	spinunlcok(&pidlist_lock);
+	spin_unlcok(&pidlist_lock);
 	orig_exit_group(status);
 }
 //----------------------------------------------------------------
@@ -465,7 +465,7 @@ static int init_function(void) {
 	set_addr_ro((unsigned long)sys_call_table);
 
 
-	spin_unlock(&calltable_lock)
+	spin_unlock(&calltable_lock);
 	int i;
 	//every systemcall initialize myTable and original system call
 	for (i = 0; i < NR_syscalls; i++){ 
