@@ -27,6 +27,7 @@ void sr_arpcache_sweepreqs(struct sr_instance *sr) {
     struct sr_arpentry *entry = sr_arpcache_lookup(cache_ptr,ip_dest.s_addr);
     
     struct sr_arpreq *ptr = sr->cache.requests->next;
+    }
     while (ptr){
         /*handle_arpreq(request);*/
     }
