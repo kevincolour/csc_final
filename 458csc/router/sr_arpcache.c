@@ -20,7 +20,7 @@ void sr_arpcache_sweepreqs(struct sr_instance *sr) {
     /* Fill this in */
     int i = 0;
     struct sr_rt *in_ptr = sr->routing_table;
-    while (in_ptr->next){
+    while (in_ptr->next != NULL){
     struct in_addr ip_dest = sr->routing_table->dest;
     struct sr_arpcache *cache_ptr = sr->cache;
     struct sr_arpentry entry = sr_arpcache_lookup(cache_ptr,ip_dest);
