@@ -28,27 +28,27 @@ void sr_arpcache_sweepreqs(struct sr_instance *sr) {
     uint32_t ip_dest = ptr->ip; 
     struct sr_arpentry *entry = sr_arpcache_lookup(cache_ptr,ip_dest);
 
-        if (*entry != null){
-            unsigned char mac_address = entry-> mac
+        if (entry != NULL){
+            unsigned char *mac_address = entry-> mac;
             /* do something good and clever ie send the packet???*/
-            free(*entry)
+            free(entry);
         }
         else{
-           struct sr_arpreq *req = arpcache_queuereq(cache_ptr,ip_dest.s_addr, PACKET, PACKET_LEN, IFACE)
-           handle_arpreq(req)    
+        /*   struct sr_arpreq *req = arpcache_queuereq(cache_ptr,ip_dest.s_addr, PACKET, PACKET_LEN, IFACE);*/
+        /*   handle_arpreq(req,cache);  */  
         }
 
     }
 
    
 }
-void handle_arpreq(struct sr_arpreq *request){
+void handle_arpreq(struct sr_arpreq *request, struct sr_arpcache *cache){
     time_t curtime = time(NULL);
     time_t time_sent = request->sent;
     if (((int)curtime - (int)time_sent) > 1){
         if (request -> times_sent >= 5){
             /* send icmp hosts unreachable to all waiting */
-            arpreq_destroy(request);
+            sr_arpreq_destroy(cache, request);
         }
         else {
             time(curtime);
@@ -291,4 +291,5 @@ void *sr_arpcache_timeout(void *sr_ptr) {
     
     return NULL;
 }
+
 
