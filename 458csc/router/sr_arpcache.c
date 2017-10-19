@@ -19,17 +19,18 @@
 void sr_arpcache_sweepreqs(struct sr_instance *sr) { 
     /* Fill this in */
     int i = 0;
-    while (sr->sr_rt->next){
-    in_addr ip_dest = sr_rt->dest;
-    sr_arpentry entry = sr_arpcache_lookup(sr->cache,ip_dest)
+    while (sr->routing_table->next){
+    struct in_addr ip_dest = sr_rt->dest;
+    struct sr_arpcache *cache_ptr = sr->cache;
+    struct sr_arpentry entry = sr_arpcache_lookup(cache_ptr,ip_dest);
     }
     
 
     struct sr_arpreq *ptr = sr->cache.requests->next;
     while (ptr){
-        handle_arpreq(request);
+        //handle_arpreq(request);
     }
-    handle_arpreq(request); // has to run for the last time
+    //handle_arpreq(request); // has to run for the last time
     
         
    
