@@ -19,29 +19,68 @@
 */
 void sr_arpcache_sweepreqs(struct sr_instance *sr) { 
     /* Fill this in */
-    int i = 0;
-    struct sr_rt *in_ptr = sr->routing_table;
-    while (in_ptr->next != NULL){
-    struct in_addr ip_dest = sr->routing_table->dest;
+    struct sr_rt *routing_tab = sr->routing_table;
     struct sr_arpcache *cache_ptr = &sr->cache;
-    struct sr_arpentry *entry = sr_arpcache_lookup(cache_ptr,ip_dest.s_addr);
-    
-    
+    //while the router has elements in it...
+
+    struct sr_arpreq *ptr = sr->cache.requests->next; // while theres still a cache
+    while (ptr != NULL){
+    uint32_t ip_dest = ptr->ip; 
+    struct sr_arpentry *entry = sr_arpcache_lookup(cache_ptr,ip_dest);
+
+        if (*entry != null){
+            unsigned char mac_address = entry-> mac
+            // do something good and clever ie send the packet???
+            free(*entry)
+        }
+        else{
+           struct sr_arpreq *req = arpcache_queuereq(cache_ptr,ip_dest.s_addr, PACKET, PACKET_LEN, IFACE)
+           handle_arpreq(req)    
+        }
+
     }
-    struct sr_arpreq *ptr = sr->cache.requests->next;
-    while (ptr){
-        /*handle_arpreq(request);*/
-    }
-    /*handle_arpreq(request); // has to run for the last time*/
-    
-        
+
    
 }
 void handle_arpreq(struct sr_arpreq *request){
+    time_t curtime = time(NULL);
+    time_t time_sent = request->sent;
+    if ((int(curtime) - int(time_sent)) > 1){
+        if (request -> times_sent >= 5){
+            // send icmp hosts unreachable to all waiting
+            arpreq_destroy(request);
+        }
+        else {
+            time(curtime);
 
+            request ->sent = curtime;
+            request ->times_sent = request -> times_sent + 1;
+        }
+    } 
 }
 
-/* You should not need to touch the rest of this code. */
+
+
+
+   function handle_arpreq(req):
+       if difftime(now, req->sent) > 1.0
+           if req->times_sent >= 5:
+               send icmp host unreachable to source addr of all pkts waiting
+                 on this request
+               arpreq_destroy(req)
+           else:
+               send arp request
+               req->sent = now
+               req->times_sent++
+
+
+
+/* You should not need to touch the
+
+
+
+
+ rest of this code. */
 
 /* Checks if an IP->MAC mapping is in the cache. IP is in network byte order.
    You must free the returned structure if it is not NULL. */
