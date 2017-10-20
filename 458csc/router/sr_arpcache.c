@@ -21,16 +21,16 @@ void sr_arpcache_sweepreqs(struct sr_instance *sr) {
     /* Fill this in */
     struct sr_rt *routing_tab = sr->routing_table;
     struct sr_arpcache *cache_ptr = &sr->cache;
-    //while the router has elements in it...
 
-    struct sr_arpreq *ptr = sr->cache.requests->next; // while theres still a cache
+
+    struct sr_arpreq *ptr = sr->cache.requests->next; /*while theres still a cache*/
     while (ptr != NULL){
     uint32_t ip_dest = ptr->ip; 
     struct sr_arpentry *entry = sr_arpcache_lookup(cache_ptr,ip_dest);
 
         if (*entry != null){
             unsigned char mac_address = entry-> mac
-            // do something good and clever ie send the packet???
+            /* do something good and clever ie send the packet???*/
             free(*entry)
         }
         else{
@@ -47,7 +47,7 @@ void handle_arpreq(struct sr_arpreq *request){
     time_t time_sent = request->sent;
     if (((int)curtime - (int)time_sent) > 1){
         if (request -> times_sent >= 5){
-            // send icmp hosts unreachable to all waiting
+            /* send icmp hosts unreachable to all waiting */
             arpreq_destroy(request);
         }
         else {
