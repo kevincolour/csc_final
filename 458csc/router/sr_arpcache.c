@@ -29,13 +29,13 @@ void sr_arpcache_sweepreqs(struct sr_instance *sr) {
     struct sr_arpentry *entry = sr_arpcache_lookup(cache_ptr,ip_dest);
 
         if (*entry != null){
-            unsigned char mac_address = entry-> mac
+            unsigned char mac_address = entry-> mac;
             /* do something good and clever ie send the packet???*/
-            free(*entry)
+            free(*entry);
         }
         else{
-           struct sr_arpreq *req = arpcache_queuereq(cache_ptr,ip_dest.s_addr, PACKET, PACKET_LEN, IFACE)
-           handle_arpreq(req)    
+        /*   struct sr_arpreq *req = arpcache_queuereq(cache_ptr,ip_dest.s_addr, PACKET, PACKET_LEN, IFACE);*/
+           handle_arpreq(req);    
         }
 
     }
@@ -290,5 +290,5 @@ void *sr_arpcache_timeout(void *sr_ptr) {
     }
     
     return NULL;
-}
+
 
