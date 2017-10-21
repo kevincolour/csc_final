@@ -8,66 +8,19 @@
 #include <string.h>
 #include "sr_arpcache.h"
 #include "sr_router.h"
-#include "sr_rt.h"
 #include "sr_if.h"
 #include "sr_protocol.h"
 
 /* 
   This function gets called every second. For each request sent out, we keep
-  checking whether we should resend a request or destroy the arp request.
+  checking whether we should resend an request or destroy the arp request.
   See the comments in the header file for an idea of what it should look like.
 */
 void sr_arpcache_sweepreqs(struct sr_instance *sr) { 
     /* Fill this in */
-    struct sr_rt *routing_tab = sr->routing_table;
-    struct sr_arpcache *cache_ptr = &sr->cache;
-
-
-    struct sr_arpreq *ptr = sr->cache.requests->next; /*while theres still a cache*/
-    while (ptr != NULL){
-    uint32_t ip_dest = ptr->ip; 
-    struct sr_arpentry *entry = sr_arpcache_lookup(cache_ptr,ip_dest);
-
-        if (entry != NULL){
-            unsigned char *mac_address = entry-> mac;
-            /* do something good and clever ie send the packet???*/
-            free(entry);
-        }
-        else{
-        /*   struct sr_arpreq *req = arpcache_queuereq(cache_ptr,ip_dest.s_addr, PACKET, PACKET_LEN, IFACE);*/
-        /*   handle_arpreq(req,cache);  */  
-        }
-
-    }
-
-   
-}
-void handle_arpreq(struct sr_arpreq *request, struct sr_arpcache *cache){
-    time_t curtime = time(NULL);
-    time_t time_sent = request->sent;
-    if (((int)curtime - (int)time_sent) > 1){
-        if (request -> times_sent >= 5){
-            /* send icmp hosts unreachable to all waiting */
-            sr_arpreq_destroy(cache, request);
-        }
-        else {
-            time(curtime);
-
-            request ->sent = curtime;
-            request ->times_sent = request -> times_sent + 1;
-        }
-    } 
 }
 
-
-
-
-/* You should not need to touch the
-
-
-
-
- rest of this code. */
+/* You should not need to touch the rest of this code. */
 
 /* Checks if an IP->MAC mapping is in the cache. IP is in network byte order.
    You must free the returned structure if it is not NULL. */
@@ -291,5 +244,4 @@ void *sr_arpcache_timeout(void *sr_ptr) {
     
     return NULL;
 }
-
 
