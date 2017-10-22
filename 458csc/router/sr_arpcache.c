@@ -12,7 +12,6 @@
 #include "sr_protocol.h"
 #include "sr_rt.h"
 #include "sr_utils.h"
-
 /* 
   This function gets called every second. For each request sent out, we keep
   checking whether we should resend an request or destroy the arp request.
@@ -21,40 +20,56 @@
 
 void send_arpreq(struct sr_arpcache *cache, struct sr_arpreq *req, struct sr_instance *sr);
 void handle_arpreq(struct sr_arpreq *req, struct sr_arpcache *cache,struct sr_instance *sr);
+void update_cache(struct sr_arpcache *cache, struct sr_arpreq *req);
 
 void sr_arpcache_sweepreqs(struct sr_instance *sr) { 
     
     struct sr_arpreq *req = sr->cache.requests;
-    while (req->next != NULL){
+    while (req != NULL){
         handle_arpreq(req, &(sr->cache), sr);
+        req = req->next;
     } 
 }
 
 void handle_arpreq(struct sr_arpreq *req, struct sr_arpcache *cache, struct sr_instance *sr){
     time_t curtime = time(NULL);
-
+    if (req->ip == sr->sr_addr.sin_addr.s_addr){
+        /*request is asking for my ip*/
+    }
     if (difftime(curtime, req->sent) > 1){
         if (req->times_sent >= 5){
             /*send icmp host unreachable*/
             sr_arpreq_destroy(cache,req);
         }
         else{
-            /*send arp request*/
+            update_cache(cache,req);
+            send_arpreq(cache,req,sr);
             req->sent = curtime;
             req->times_sent = req-> times_sent + 1;
         }
     }
 }
 
+void update_cache(struct sr_arpcache *cache, struct sr_arpreq *req){
+    
+}
+void send_packet(struct sr_arpcache *cache, struct sr_arpreq *req, struct sr_instance *sr){
+
+    
+}
+
+
+
 void send_arpreq(struct sr_arpcache *cache, struct sr_arpreq *req, struct sr_instance *sr){
    /* check the arpcache for the mac address
     if miss, arp request should be sent to a target ip 
     */
-    struct sr_arpentry *cache_lookup = (sr_arpcache_lookup(cache, req->ip));
-    if  (cache_lookup != NULL){
-        struct sr_rt *r_tab = sr->routing_table;
-        while (r_tab != NULL){
-            if (r_tab-> dest.s_addr == req->ip){
+    
+    print_hdrs(req->packets->buf, req->packets->len);
+    struct sr_arpentry *entry = sr_arpcache_lookup(cache,req->ip);
+   
+    if  ( req != NULL){
+            
                 printf("hello"); 
                 struct sr_packet *packet = req->packets;
                 while (packet != NULL){
@@ -64,21 +79,22 @@ void send_arpreq(struct sr_arpcache *cache, struct sr_arpreq *req, struct sr_ins
                         fprintf(stderr,"something went wrong with sending the packet");
                     } 
                     packet = packet->next;
-                }           
-
-            }
-            r_tab = r_tab -> next;
-        }
-
-
-        sr_arpreq_destroy(cache,req);
+                }
+                sr_arpreq_destroy(cache, req);           
     }
     else{
+        unsigned char broadcast_mac[6] = {0xff,0xff,0xff,0xff,0xff,0xff};
+        struct sr_arpreq *request_to_add = sr_arpcache_queuereq(cache, req->ip,req->packets->buf,req->packets->len,req->packets->iface);
+
         print_addr_ip(sr->routing_table->dest);
 
 
     }
+
+
+
 }
+
 /* You should not need to touch the rest of this code. */
 
 /* Checks if an IP->MAC mapping is in the cache. IP is in network byte order.
